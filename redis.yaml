@@ -1,5 +1,5 @@
 - name: configure redis component
-  hosts: user
+  hosts: redis
   become: yes
   tasks:
   - name : Disable current redis
