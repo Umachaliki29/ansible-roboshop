@@ -10,7 +10,7 @@
 
   - name : Install NodeJS
     ansible.builtin.dnf: 
-      name: nodejs -y
+      name: "nodejs -y"
       state: present
 
   - name : create roboshop system User
@@ -19,11 +19,6 @@
       shell: /sbin/nologin
       system: true
       home: /app
-
-  - name : Create directory
-    ansible.builtin.file: 
-      path: /app 
-      state: directory  
 
   - name : Create directory
     ansible.builtin.file: 
