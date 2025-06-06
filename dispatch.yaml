@@ -1,0 +1,56 @@
+- name: setting up dispatch using ansible 
+  become: yes
+  hosts: dispatch
+  tasks:
+    - name: Install golang  pacakges
+      ansible.builtin.dnf:
+        name: golang 
+        state: install 
+     
+
+    - name : create roboshop system User
+      ansible.builtin.user: 
+        name: roboshop
+        shell: /sbin/nologin
+        system: true
+        home: /app
+
+    - name : Create app directory
+      ansible.builtin.file: 
+        path: /app 
+        state: directory  
+
+    - name: Download dispatch  code
+      ansible.builtin.get_url:
+        url: https://roboshop-artifacts.s3.amazonaws.com/dispatch-v3.zip 
+        dest: /tmp/dispatch.zip
+
+    - name: extract dispatch code
+      ansible.builtin.unarchive:
+        src: /tmp/dispatch.zip
+        dest: /app 
+        remote_src: yes
+
+    - name: Install specified goland requirements 
+      command: {{ item }}
+      args:
+        chdir: /app
+      loop:
+        - go mod init dispatch
+        - go get 
+        - go build
+
+    - name: copy dispatch service to system directory
+      ansible.builtin.copy:
+        src: dispatch.service
+        dest: /etc/systemd/system/dispatch.service
+
+    - name: systemctl reload the daemon
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: start and enable dispatch
+      ansible.builtin.service:
+        name: dispatch
+        state: started
+        enabled: yes
