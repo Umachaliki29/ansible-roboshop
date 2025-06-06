@@ -32,7 +32,7 @@
         remote_src: yes
 
     - name: Install specified goland requirements 
-      command: {{ item }}
+      command: "{{ item }}"
       args:
         chdir: /app
       loop:
